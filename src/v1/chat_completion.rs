@@ -44,9 +44,9 @@ pub struct ChatCompletionRequest {
     pub stream: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub safe_prompt: Option<bool>,
-    // TODO Check that prop (seen in official Python client but not in API doc).
+    // TODO Check this prop (seen in official Python client but not in API doc).
     // pub tool_choice: Option<String>,
-    // TODO Check that prop (seen in official Python client but not in API doc).
+    // TODO Check this prop (seen in official Python client but not in API doc).
     // pub response_format: Option<String>,
 }
 impl ChatCompletionRequest {
@@ -95,7 +95,7 @@ pub struct ChatCompletionChoice {
     pub index: u32,
     pub message: ChatCompletionMessage,
     pub finish_reason: String,
-    // TODO Check that prop (seen in API responses but undocumented).
+    // TODO Check this prop (seen in API responses but undocumented).
     // pub logprobs: ???
 }
 

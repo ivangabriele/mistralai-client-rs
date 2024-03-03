@@ -27,7 +27,7 @@ Rust client for the Mistral AI API.
 - [x] Chat without streaming
 - [ ] Chat with streaming
 - [ ] Embedding
-- [ ] List models
+- [x] List models
 - [ ] Function Calling
 
 ## Installation
@@ -63,11 +63,8 @@ fn main() {
 ### Chat without streaming
 
 ```rs
-use mistralai::v1::{
-    chat_completion::{
-        ChatCompletionMessage, ChatCompletionMessageRole, ChatCompletionRequest,
-        ChatCompletionRequestOptions,
-    },
+use mistralai_client::v1::{
+    chat_completion::{ChatCompletionMessage, ChatCompletionMessageRole, ChatCompletionRequestOptions},
     client::Client,
     constants::OPEN_MISTRAL_7B,
 };
@@ -103,4 +100,15 @@ _In progress._
 
 ### List models
 
-_In progress._
+```rs
+use mistralai_client::v1::client::Client;
+
+fn main() {
+    // This example suppose you have set the `MISTRAL_API_KEY` environment variable.
+    let client = Client::new(None, None, None, None);
+
+    let result = client.list_models(model, messages, Some(options)).unwrap();
+    println!("First Model ID: {:?}", result.data[0].id);
+    // => "First Model ID: open-mistral-7b"
+}
+```
