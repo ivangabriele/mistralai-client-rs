@@ -5,7 +5,7 @@ define RELEASE_TEMPLATE
 	git add .
 	git commit -m "docs(changelog): update"
 	git push origin HEAD
-	cargo release $(1)
+	cargo release $(1) --execute
 	git push origin HEAD --tags
 endef
 
