@@ -1,1 +1,2 @@
 allow-branch = ["main"]
+re-release-replacements = [{ file = "CHANGELOG.md", search = "## []", replace = "## [{{version}}]" }]
