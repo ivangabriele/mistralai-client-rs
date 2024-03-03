@@ -6,6 +6,8 @@ use crate::v1::{
     constants::API_URL_BASE,
 };
 
+use super::chat_completion::{ChatCompletionMessage, ChatCompletionParams};
+
 pub struct Client {
     pub api_key: String,
     pub endpoint: String,
@@ -80,18 +82,22 @@ impl Client {
 
         let result = request.with_json(params).unwrap().send();
         match result {
-            Ok(res) => {
-                print!("{:?}", res.as_str().unwrap());
+            Ok(response) => {
+                print!("{:?}", response.as_str().unwrap());
 
-                if (200..=299).contains(&res.status_code) {
-                    Ok(res)
+                if (200..=299).contains(&response.status_code) {
+                    Ok(response)
                 } else {
                     Err(APIError {
-                        message: format!("{}: {}", res.status_code, res.as_str().unwrap()),
+                        message: format!(
+                            "{}: {}",
+                            response.status_code,
+                            response.as_str().unwrap()
+                        ),
                     })
                 }
             }
-            Err(e) => Err(self.new_error(e)),
+            Err(error) => Err(self.new_error(error)),
         }
     }
 
@@ -101,16 +107,20 @@ impl Client {
 
         let result = request.send();
         match result {
-            Ok(res) => {
-                if (200..=299).contains(&res.status_code) {
-                    Ok(res)
+            Ok(response) => {
+                if (200..=299).contains(&response.status_code) {
+                    Ok(response)
                 } else {
                     Err(APIError {
-                        message: format!("{}: {}", res.status_code, res.as_str().unwrap()),
+                        message: format!(
+                            "{}: {}",
+                            response.status_code,
+                            response.as_str().unwrap()
+                        ),
                     })
                 }
             }
-            Err(e) => Err(self.new_error(e)),
+            Err(error) => Err(self.new_error(error)),
         }
     }
 
@@ -132,12 +142,19 @@ impl Client {
     //     }
     // }
 
-    pub fn chat(&self, request: ChatCompletionRequest) -> Result<ChatCompletionResponse, APIError> {
+    pub fn chat(
+        &self,
+        model: String,
+        messages: Vec<ChatCompletionMessage>,
+        options: Option<ChatCompletionParams>,
+    ) -> Result<ChatCompletionResponse, APIError> {
+        let request = ChatCompletionRequest::new(model, messages, options);
+
         let response = self.post("/chat/completions", &request)?;
         let result = response.json::<ChatCompletionResponse>();
         match result {
-            Ok(r) => Ok(r),
-            Err(e) => Err(self.new_error(e)),
+            Ok(response) => Ok(response),
+            Err(error) => Err(self.new_error(error)),
         }
     }
 

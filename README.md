@@ -87,8 +87,7 @@ fn main() {
         ..Default::default()
     };
 
-    let chat_completion_request = ChatCompletionRequest::new(model, messages, Some(options));
-    let result = client.chat(chat_completion_request).unwrap();
+    let result = client.chat(model, messages, Some(options)).unwrap();
     println!("Assistant: {}", result.choices[0].message.content);
     // => "Assistant: Tower. [...]"
 }

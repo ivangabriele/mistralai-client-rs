@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::v1::common;
 
 #[derive(Debug)]
-pub struct ChatCompletionRequestOptions {
+pub struct ChatCompletionParams {
     pub tools: Option<String>,
     pub temperature: Option<f32>,
     pub max_tokens: Option<u32>,
@@ -12,7 +12,7 @@ pub struct ChatCompletionRequestOptions {
     pub stream: Option<bool>,
     pub safe_prompt: Option<bool>,
 }
-impl Default for ChatCompletionRequestOptions {
+impl Default for ChatCompletionParams {
     fn default() -> Self {
         Self {
             tools: None,
@@ -53,9 +53,9 @@ impl ChatCompletionRequest {
     pub fn new(
         model: String,
         messages: Vec<ChatCompletionMessage>,
-        options: Option<ChatCompletionRequestOptions>,
+        options: Option<ChatCompletionParams>,
     ) -> Self {
-        let ChatCompletionRequestOptions {
+        let ChatCompletionParams {
             tools,
             temperature,
             max_tokens,
