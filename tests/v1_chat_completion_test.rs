@@ -9,7 +9,7 @@ use mistralai_client::v1::{
 };
 
 #[test]
-fn test_client_new() {
+fn test_chat_completion() {
     extern crate dotenv;
 
     use dotenv::dotenv;

@@ -19,6 +19,8 @@ jobs:
           toolchain: 1.76.0
       - name: Run tests (with coverage)
         run: make test-cover
+        env:
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
       - name: Upload tests coverage
         uses: codecov/codecov-action@v3
         with:
