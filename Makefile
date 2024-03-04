@@ -2,6 +2,17 @@ SHELL := /bin/bash
 
 .PHONY: test
 
+define source_env_if_not_ci
+	@if [ -z "$${CI}" ]; then \
+		if [ -f ./.env ]; then \
+			source ./.env; \
+		else \
+			echo "No .env file found"; \
+			exit 1; \
+		fi \
+	fi
+endef
+
 define RELEASE_TEMPLATE
 	conventional-changelog -p conventionalcommits -i ./CHANGELOG.md -s
 	git add .
@@ -21,8 +32,10 @@ release-major:
 	$(call RELEASE_TEMPLATE,major)
 
 test:
-	@source ./.env && cargo test --all-targets --no-fail-fast
+	@$(source_env_if_not_ci) && cargo test --nocapture --no-fail-fast
 test-cover:
-	cargo tarpaulin --all-targets --frozen --no-fail-fast --out Xml --skip-clean
+	@$(source_env_if_not_ci) && cargo tarpaulin --frozen --out Xml
+test-doc:
+	@$(source_env_if_not_ci) && cargo test --doc --nocapture --no-fail-fast
 test-watch:
-	cargo watch -x "test -- --all-targets --nocapture"
+	@$(source_env_if_not_ci) && cargo watch -x "test -- --nocapture"
