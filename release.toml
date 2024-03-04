@@ -1,2 +1,2 @@
 allow-branch = ["main"]
-pre-release-replacements = [{ file = "CHANGELOG.md", search = "## []", replace = "## [{{version}}]" }]
+pre-release-replacements = [{ file = "CHANGELOG.md", search = "## \\[\\]", replace = "## [{{version}}]" }]
