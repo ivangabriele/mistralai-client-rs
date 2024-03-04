@@ -25,16 +25,39 @@ pub struct Client {
 }
 
 impl Client {
+    /// Constructs a new `Client`.
+    ///
+    /// # Arguments
+    ///
+    /// * `api_key`     - An optional API key.
+    ///                   If not provided, the method will try to use the `MISTRAL_API_KEY` environment variable.
+    /// * `endpoint`    - An optional custom API endpoint. Defaults to the official API endpoint if not provided.
+    /// * `max_retries` - Optional maximum number of retries for failed requests. Defaults to `5`.
+    /// * `timeout`     - Optional timeout in seconds for requests. Defaults to `120`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use mistralai_client::v1::client::Client;
+    ///
+    /// let client = Client::new(Some("your_api_key_here".to_string()), None, Some(3), Some(60));
+    /// assert!(client.is_ok());
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// This method fails whenever neither the `api_key` is provided
+    /// nor the `MISTRAL_API_KEY` environment variable is set.
     pub fn new(
         api_key: Option<String>,
         endpoint: Option<String>,
         max_retries: Option<u32>,
         timeout: Option<u32>,
     ) -> Result<Self, ClientError> {
-        let api_key = api_key.unwrap_or(match std::env::var("MISTRAL_API_KEY") {
-            Ok(api_key_from_env) => api_key_from_env,
-            Err(_) => return Err(ClientError::ApiKeyError),
-        });
+        let api_key = match api_key {
+            Some(api_key_from_param) => api_key_from_param,
+            None => std::env::var("MISTRAL_API_KEY").map_err(|_| ClientError::MissingApiKey)?,
+        };
         let endpoint = endpoint.unwrap_or(API_URL_BASE.to_string());
         let max_retries = max_retries.unwrap_or(5);
         let timeout = timeout.unwrap_or(120);
@@ -63,6 +86,34 @@ impl Client {
         }
     }
 
+    /// Asynchronously sends a chat completion request and returns the response.
+    ///
+    /// # Arguments
+    ///
+    /// * `model` - The model to use for the chat completion.
+    /// * `messages` - A vector of `ChatMessage` to send as part of the chat.
+    /// * `options` - Optional `ChatCompletionParams` to customize the request.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use mistralai_client::v1::{
+    ///     chat_completion::{ChatMessage, ChatMessageRole},
+    ///     client::Client,
+    ///     constants::Model,
+    /// };
+    ///
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     let client = Client::new(None, None, None, None).unwrap();
+    ///     let messages = vec![ChatMessage {
+    ///         role: ChatMessageRole::user,
+    ///         content: "Hello, world!".to_string(),
+    ///     }];
+    ///     let response = client.chat_async(Model::OpenMistral7b, messages, None).await.unwrap();
+    ///     println!("{}: {}", response.choices[0].message.role, response.choices[0].message.content);
+    /// }
+    /// ```
     pub async fn chat_async(
         &self,
         model: Model,

@@ -11,7 +11,7 @@ pub struct ChatMessage {
     pub content: String,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, strum_macros::Display, Eq, PartialEq, Deserialize, Serialize)]
 #[allow(non_camel_case_types)]
 pub enum ChatMessageRole {
     assistant,

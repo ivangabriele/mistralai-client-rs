@@ -15,7 +15,7 @@ impl Error for ApiError {}
 #[derive(Debug, PartialEq, thiserror::Error)]
 pub enum ClientError {
     #[error("You must either set the `MISTRAL_API_KEY` environment variable or specify it in `Client::new(api_key, ...).")]
-    ApiKeyError,
+    MissingApiKey,
     #[error("Failed to read the response text.")]
-    ReadResponseTextError,
+    UnreadableResponseText,
 }
