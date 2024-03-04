@@ -1,3 +1,11 @@
+## [](https://github.com/ivangabriele/mistralai-client-rs/compare/v0.4.0...v) (2024-03-04)
+
+
+### Features
+
+* add client.embeddings_async() method ([3c22891](https://github.com/ivangabriele/mistralai-client-rs/commit/3c228914f78b0edd4a592091265b88d0bc55568b))
+* add client.list_models_async() method ([b69f7c6](https://github.com/ivangabriele/mistralai-client-rs/commit/b69f7c617c15dd63abb61d004636512916d766bb))
+
 ## [0.4.0](https://github.com/ivangabriele/mistralai-client-rs/compare/v0.3.0...v) (2024-03-04)
 
 
