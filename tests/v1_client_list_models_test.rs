@@ -2,12 +2,7 @@ use jrest::expect;
 use mistralai_client::v1::client::Client;
 
 #[test]
-fn test_list_models() {
-    extern crate dotenv;
-
-    use dotenv::dotenv;
-    dotenv().ok();
-
+fn test_client_list_models() {
     let client = Client::new(None, None, None, None);
 
     let response = client.list_models().unwrap();

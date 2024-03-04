@@ -27,7 +27,14 @@ Then run:
 git clone https://github.com/ivangabriele/mistralai-client-rs.git # or your fork
 cd ./mistralai-client-rs
 cargo build
+cp .env.example .env
 ```
+
+Then edit the `.env` file to set your `MISTRAL_API_KEY`.
+
+> [!NOTE]
+> All tests use either the `open-mistral-7b` or `mistral-embed` models and only consume a few dozen tokens.
+> So you would have to run them thousands of times to even reach a single dollar of usage.
 
 ### Optional requirements
 
@@ -51,5 +58,4 @@ Help us keep this project open and inclusive. Please read and follow our [Code o
 
 ## Commit Message Format
 
-This repository follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification and
-specificaly the [Angular Commit Message Guidelines](https://github.com/angular/angular/blob/main/CONTRIBUTING.md#commit).
+This repository follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification.

@@ -2,12 +2,7 @@ use jrest::expect;
 use mistralai_client::v1::{client::Client, constants::EmbedModel};
 
 #[test]
-fn test_embeddings() {
-    extern crate dotenv;
-
-    use dotenv::dotenv;
-    dotenv().ok();
-
+fn test_client_embeddings() {
     let client: Client = Client::new(None, None, None, None);
 
     let model = EmbedModel::MistralEmbed;

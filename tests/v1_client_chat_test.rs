@@ -6,12 +6,7 @@ use mistralai_client::v1::{
 };
 
 #[test]
-fn test_chat_completion() {
-    extern crate dotenv;
-
-    use dotenv::dotenv;
-    dotenv().ok();
-
+fn test_client_chat() {
     let client = Client::new(None, None, None, None);
 
     let model = Model::OpenMistral7b;

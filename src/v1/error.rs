@@ -2,14 +2,18 @@ use std::error::Error;
 use std::fmt;
 
 #[derive(Debug)]
-pub struct APIError {
+pub struct ApiError {
     pub message: String,
 }
-
-impl fmt::Display for APIError {
+impl fmt::Display for ApiError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "APIError: {}", self.message)
+        write!(f, "ApiError: {}", self.message)
     }
 }
+impl Error for ApiError {}
 
-impl Error for APIError {}
+#[derive(Debug, thiserror::Error)]
+pub enum ClientError {
+    #[error("You must either set the `MISTRAL_API_KEY` environment variable or specify it in `Client::new(api_key, ...).")]
+    ApiKeyError,
+}

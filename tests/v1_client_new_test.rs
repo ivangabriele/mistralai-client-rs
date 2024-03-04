@@ -4,6 +4,7 @@ use mistralai_client::v1::client::Client;
 #[test]
 fn test_client_new_with_none_params() {
     let maybe_original_mistral_api_key = std::env::var("MISTRAL_API_KEY").ok();
+    std::env::remove_var("MISTRAL_API_KEY");
     std::env::set_var("MISTRAL_API_KEY", "test_api_key_from_env");
 
     let client = Client::new(None, None, None, None);
@@ -24,6 +25,7 @@ fn test_client_new_with_none_params() {
 #[test]
 fn test_client_new_with_all_params() {
     let maybe_original_mistral_api_key = std::env::var("MISTRAL_API_KEY").ok();
+    std::env::remove_var("MISTRAL_API_KEY");
     std::env::set_var("MISTRAL_API_KEY", "test_api_key_from_env");
 
     let api_key = Some("test_api_key_from_param".to_string());
@@ -42,6 +44,22 @@ fn test_client_new_with_all_params() {
     expect!(client.endpoint).to_be(endpoint.unwrap());
     expect!(client.max_retries).to_be(max_retries.unwrap());
     expect!(client.timeout).to_be(timeout.unwrap());
+
+    match maybe_original_mistral_api_key {
+        Some(original_mistral_api_key) => {
+            std::env::set_var("MISTRAL_API_KEY", original_mistral_api_key)
+        }
+        None => std::env::remove_var("MISTRAL_API_KEY"),
+    }
+}
+
+#[test]
+#[should_panic]
+fn test_client_new_with_missing_api_key() {
+    let maybe_original_mistral_api_key = std::env::var("MISTRAL_API_KEY").ok();
+    std::env::remove_var("MISTRAL_API_KEY");
+
+    let _client = Client::new(None, None, None, None);
 
     match maybe_original_mistral_api_key {
         Some(original_mistral_api_key) => {
