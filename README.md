@@ -31,7 +31,7 @@ Rust client for the Mistral AI API.
 - [x] Chat without streaming (async)
 - [ ] Chat with streaming
 - [x] Embedding
-- [ ] Embedding (async)
+- [x] Embedding (async)
 - [x] List models
 - [x] List models (async)
 - [ ] Function Calling
@@ -122,7 +122,7 @@ async fn main() {
         ..Default::default()
     };
 
-    let result = client.chat(model, messages, Some(options)).await.unwrap();
+    let result = client.chat_async(model, messages, Some(options)).await.unwrap();
     println!("Assistant: {}", result.choices[0].message.content);
     // => "Assistant: Tower. [...]"
 }
@@ -156,7 +156,26 @@ fn main() {
 
 ### Embeddings (async)
 
-_In progress._
+```rs
+use mistralai_client::v1::{client::Client, constants::EmbedModel};
+
+#[tokio::main]
+async fn main() {
+    // This example suppose you have set the `MISTRAL_API_KEY` environment variable.
+  let client: Client = Client::new(None, None, None, None).unwrap();
+
+  let model = EmbedModel::MistralEmbed;
+  let input = vec!["Embed this sentence.", "As well as this one."]
+      .iter()
+      .map(|s| s.to_string())
+      .collect();
+  let options = None;
+
+  let response = client.embeddings_async(model, input, options).await.unwrap();
+  println!("Embeddings: {:?}", response.data);
+  // => "Embeddings: [{...}, {...}]"
+}
+```
 
 ### List models
 
@@ -183,7 +202,7 @@ async fn main() {
     // This example suppose you have set the `MISTRAL_API_KEY` environment variable.
     let client = Client::new(None, None, None, None).await.unwrap();
 
-    let result = client.list_models().unwrap();
+    let result = client.list_models_async().unwrap();
     println!("First Model ID: {:?}", result.data[0].id);
     // => "First Model ID: open-mistral-7b"
 }

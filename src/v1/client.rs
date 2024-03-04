@@ -89,6 +89,22 @@ impl Client {
         }
     }
 
+    pub async fn embeddings_async(
+        &self,
+        model: EmbedModel,
+        input: Vec<String>,
+        options: Option<EmbeddingRequestOptions>,
+    ) -> Result<EmbeddingResponse, ApiError> {
+        let request = EmbeddingRequest::new(model, input, options);
+
+        let response = self.post_async("/embeddings", &request).await?;
+        let result = response.json::<EmbeddingResponse>().await;
+        match result {
+            Ok(response) => Ok(response),
+            Err(error) => Err(self.to_api_error(error)),
+        }
+    }
+
     pub fn list_models(&self) -> Result<ModelListResponse, ApiError> {
         let response = self.get_sync("/models")?;
         let result = response.json::<ModelListResponse>();
