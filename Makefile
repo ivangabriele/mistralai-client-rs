@@ -40,6 +40,6 @@ test:
 test-cover:
 	@$(source_env_if_not_ci) && cargo tarpaulin --frozen --out Xml
 test-doc:
-	@$(source_env_if_not_ci) && cargo test --doc --nocapture --no-fail-fast
+	@$(source_env_if_not_ci) && cargo test --doc --no-fail-fast
 test-watch:
 	@$(source_env_if_not_ci) && cargo watch -x "test -- --nocapture"
