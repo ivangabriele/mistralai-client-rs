@@ -22,6 +22,10 @@ define RELEASE_TEMPLATE
 	git push origin HEAD --tags
 endef
 
+doc:
+	cargo doc
+	open ./target/doc/mistralai_client/index.html
+
 release-patch:
 	$(call RELEASE_TEMPLATE,patch)
 
