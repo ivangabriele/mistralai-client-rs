@@ -17,7 +17,7 @@ Rust client for the Mistral AI API.
 - [Usage](#usage)
   - [Chat without streaming](#chat-without-streaming)
   - [Chat without streaming (async)](#chat-without-streaming-async)
-  - [Chat with streaming](#chat-with-streaming)
+  - [Chat with streaming (async)](#chat-with-streaming-async)
   - [Embeddings](#embeddings)
   - [Embeddings (async)](#embeddings-async)
   - [List models](#list-models)
@@ -29,7 +29,7 @@ Rust client for the Mistral AI API.
 
 - [x] Chat without streaming
 - [x] Chat without streaming (async)
-- [ ] Chat with streaming
+- [x] Chat with streaming
 - [x] Embedding
 - [x] Embedding (async)
 - [x] List models
@@ -71,7 +71,7 @@ fn main() {
 
 ```rs
 use mistralai_client::v1::{
-    chat_completion::{ChatCompletionMessage, ChatCompletionMessageRole, ChatCompletionRequestOptions},
+    chat_completion::{ChatCompletionParams, ChatMessage, ChatMessageRole},
     client::Client,
     constants::Model,
 };
@@ -81,8 +81,8 @@ fn main() {
     let client = Client::new(None, None, None, None).unwrap();
 
     let model = Model::OpenMistral7b;
-    let messages = vec![ChatCompletionMessage {
-        role: ChatCompletionMessageRole::user,
+    let messages = vec![ChatMessage {
+        role: ChatMessageRole::user,
         content: "Just guess the next word: \"Eiffel ...\"?".to_string(),
     }];
     let options = ChatCompletionRequestOptions {
@@ -101,7 +101,7 @@ fn main() {
 
 ```rs
 use mistralai_client::v1::{
-    chat_completion::{ChatCompletionMessage, ChatCompletionMessageRole, ChatCompletionRequestOptions},
+    chat_completion::{ChatCompletionParams, ChatMessage, ChatMessageRole},
     client::Client,
     constants::Model,
 };
@@ -112,8 +112,8 @@ async fn main() {
     let client = Client::new(None, None, None, None).unwrap();
 
     let model = Model::OpenMistral7b;
-    let messages = vec![ChatCompletionMessage {
-        role: ChatCompletionMessageRole::user,
+    let messages = vec![ChatMessage {
+        role: ChatMessageRole::user,
         content: "Just guess the next word: \"Eiffel ...\"?".to_string(),
     }];
     let options = ChatCompletionRequestOptions {
@@ -128,9 +128,44 @@ async fn main() {
 }
 ```
 
-### Chat with streaming
+### Chat with streaming (async)
 
-_In progress._
+```rs
+use futures::stream::StreamExt;
+use mistralai_client::v1::{
+    chat_completion::{ChatCompletionParams, ChatMessage, ChatMessageRole},
+    client::Client,
+    constants::Model,
+};
+
+[#tokio::main]
+async fn main() {
+    // This example suppose you have set the `MISTRAL_API_KEY` environment variable.
+  let client = Client::new(None, None, None, None).unwrap();
+
+    let model = Model::OpenMistral7b;
+    let messages = vec![ChatMessage {
+        role: ChatMessageRole::user,
+        content: "Just guess the next word: \"Eiffel ...\"?".to_string(),
+    }];
+    let options = ChatCompletionParams {
+        temperature: Some(0.0),
+        random_seed: Some(42),
+        ..Default::default()
+    };
+
+    let stream_result = client.chat_stream(model, messages, Some(options)).await;
+    let mut stream = stream_result.expect("Failed to create stream.");
+    while let Some(chunk_result) = stream.next().await {
+        match chunk_result {
+            Ok(chunk) => {
+                println!("Assistant (message chunk): {}", chunk.choices[0].delta.content);
+            }
+            Err(e) => eprintln!("Error processing chunk: {:?}", e),
+        }
+    }
+}
+```
 
 ### Embeddings
 

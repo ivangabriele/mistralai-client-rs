@@ -1,15 +1,21 @@
-use crate::v1::error::ApiError;
+use futures::stream::StreamExt;
+use futures::Stream;
 use reqwest::Error as ReqwestError;
+use serde_json::from_str;
+
+use crate::v1::error::ApiError;
 
 use crate::v1::{
     chat_completion::{
-        ChatCompletionMessage, ChatCompletionParams, ChatCompletionRequest, ChatCompletionResponse,
+        ChatCompletionParams, ChatCompletionRequest, ChatCompletionResponse, ChatMessage,
     },
     constants::{EmbedModel, Model, API_URL_BASE},
     embedding::{EmbeddingRequest, EmbeddingRequestOptions, EmbeddingResponse},
     error::ClientError,
     model_list::ModelListResponse,
 };
+
+use super::chat_completion::ChatCompletionStreamChunk;
 
 pub struct Client {
     pub api_key: String,
@@ -44,10 +50,10 @@ impl Client {
     pub fn chat(
         &self,
         model: Model,
-        messages: Vec<ChatCompletionMessage>,
+        messages: Vec<ChatMessage>,
         options: Option<ChatCompletionParams>,
     ) -> Result<ChatCompletionResponse, ApiError> {
-        let request = ChatCompletionRequest::new(model, messages, options);
+        let request = ChatCompletionRequest::new(model, messages, false, options);
 
         let response = self.post_sync("/chat/completions", &request)?;
         let result = response.json::<ChatCompletionResponse>();
@@ -60,10 +66,10 @@ impl Client {
     pub async fn chat_async(
         &self,
         model: Model,
-        messages: Vec<ChatCompletionMessage>,
+        messages: Vec<ChatMessage>,
         options: Option<ChatCompletionParams>,
     ) -> Result<ChatCompletionResponse, ApiError> {
-        let request = ChatCompletionRequest::new(model, messages, options);
+        let request = ChatCompletionRequest::new(model, messages, false, options);
 
         let response = self.post_async("/chat/completions", &request).await?;
         let result = response.json::<ChatCompletionResponse>().await;
@@ -71,6 +77,50 @@ impl Client {
             Ok(response) => Ok(response),
             Err(error) => Err(self.to_api_error(error)),
         }
+    }
+
+    pub async fn chat_stream(
+        &self,
+        model: Model,
+        messages: Vec<ChatMessage>,
+        options: Option<ChatCompletionParams>,
+    ) -> Result<impl Stream<Item = Result<ChatCompletionStreamChunk, ApiError>>, ApiError> {
+        let request = ChatCompletionRequest::new(model, messages, true, options);
+        let response = self
+            .post_stream("/chat/completions", &request)
+            .await
+            .map_err(|e| ApiError {
+                message: e.to_string(),
+            })?;
+        if !response.status().is_success() {
+            let status = response.status();
+            let text = response.text().await.unwrap_or_default();
+            return Err(ApiError {
+                message: format!("{}: {}", status, text),
+            });
+        }
+
+        let deserialized_stream =
+            response
+                .bytes_stream()
+                .map(|item| -> Result<ChatCompletionStreamChunk, ApiError> {
+                    match item {
+                        Ok(bytes) => {
+                            let text = String::from_utf8(bytes.to_vec()).map_err(|e| ApiError {
+                                message: e.to_string(),
+                            })?;
+                            let text_trimmed = text.trim_start_matches("data: ");
+                            from_str(&text_trimmed).map_err(|e| ApiError {
+                                message: e.to_string(),
+                            })
+                        }
+                        Err(e) => Err(ApiError {
+                            message: e.to_string(),
+                        }),
+                    }
+                });
+
+        Ok(deserialized_stream)
     }
 
     pub fn embeddings(
@@ -156,10 +206,25 @@ impl Client {
         request_builder
     }
 
+    fn build_request_stream(&self, request: reqwest::RequestBuilder) -> reqwest::RequestBuilder {
+        let user_agent = format!(
+            "ivangabriele/mistralai-client-rs/{}",
+            env!("CARGO_PKG_VERSION")
+        );
+
+        let request_builder = request
+            .bearer_auth(&self.api_key)
+            .header("Accept", "text/event-stream")
+            .header("Content-Type", "application/json")
+            .header("User-Agent", user_agent);
+
+        request_builder
+    }
+
     fn get_sync(&self, path: &str) -> Result<reqwest::blocking::Response, ApiError> {
-        let client_sync = reqwest::blocking::Client::new();
+        let reqwest_client = reqwest::blocking::Client::new();
         let url = format!("{}{}", self.endpoint, path);
-        let request = self.build_request_sync(client_sync.get(url));
+        let request = self.build_request_sync(reqwest_client.get(url));
 
         let result = request.send();
         match result {
@@ -243,6 +308,35 @@ impl Client {
         let url = format!("{}{}", self.endpoint, path);
         let request_builder = reqwest_client.post(url).json(params);
         let request = self.build_request_async(request_builder);
+
+        let result = request.send().await;
+        match result {
+            Ok(response) => {
+                if response.status().is_success() {
+                    Ok(response)
+                } else {
+                    let status = response.status();
+                    let text = response.text().await.unwrap_or_default();
+                    Err(ApiError {
+                        message: format!("{}: {}", status, text),
+                    })
+                }
+            }
+            Err(error) => Err(ApiError {
+                message: error.to_string(),
+            }),
+        }
+    }
+
+    async fn post_stream<T: serde::ser::Serialize + std::fmt::Debug>(
+        &self,
+        path: &str,
+        params: &T,
+    ) -> Result<reqwest::Response, ApiError> {
+        let reqwest_client = reqwest::Client::new();
+        let url = format!("{}{}", self.endpoint, path);
+        let request_builder = reqwest_client.post(url).json(params);
+        let request = self.build_request_stream(request_builder);
 
         let result = request.send().await;
         match result {

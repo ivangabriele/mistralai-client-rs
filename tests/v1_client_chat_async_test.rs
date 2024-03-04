@@ -1,6 +1,6 @@
 use jrest::expect;
 use mistralai_client::v1::{
-    chat_completion::{ChatCompletionMessage, ChatCompletionMessageRole, ChatCompletionParams},
+    chat_completion::{ChatCompletionParams, ChatMessage, ChatMessageRole},
     client::Client,
     constants::Model,
 };
@@ -10,8 +10,8 @@ async fn test_client_chat_async() {
     let client = Client::new(None, None, None, None).unwrap();
 
     let model = Model::OpenMistral7b;
-    let messages = vec![ChatCompletionMessage {
-        role: ChatCompletionMessageRole::user,
+    let messages = vec![ChatMessage {
+        role: ChatMessageRole::user,
         content: "Just guess the next word: \"Eiffel ...\"?".to_string(),
     }];
     let options = ChatCompletionParams {
@@ -29,7 +29,7 @@ async fn test_client_chat_async() {
     expect!(response.object).to_be("chat.completion".to_string());
     expect!(response.choices.len()).to_be(1);
     expect!(response.choices[0].index).to_be(0);
-    expect!(response.choices[0].message.role.clone()).to_be(ChatCompletionMessageRole::assistant);
+    expect!(response.choices[0].message.role.clone()).to_be(ChatMessageRole::assistant);
     expect!(response.choices[0].message.content.clone())
         .to_be("Tower. The Eiffel Tower is a famous landmark in Paris, France.".to_string());
     expect!(response.usage.prompt_tokens).to_be_greater_than(0);
