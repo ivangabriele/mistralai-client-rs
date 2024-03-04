@@ -33,7 +33,7 @@ Rust client for the Mistral AI API.
 - [x] Embedding
 - [ ] Embedding (async)
 - [x] List models
-- [ ] List models (async)
+- [x] List models (async)
 - [ ] Function Calling
 - [ ] Function Calling (async)
 
@@ -175,4 +175,16 @@ fn main() {
 
 ### List models (async)
 
-_In progress._
+```rs
+use mistralai_client::v1::client::Client;
+
+#[tokio::main]
+async fn main() {
+    // This example suppose you have set the `MISTRAL_API_KEY` environment variable.
+    let client = Client::new(None, None, None, None).await.unwrap();
+
+    let result = client.list_models().unwrap();
+    println!("First Model ID: {:?}", result.data[0].id);
+    // => "First Model ID: open-mistral-7b"
+}
+```

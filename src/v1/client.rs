@@ -41,146 +41,6 @@ impl Client {
         })
     }
 
-    pub fn build_request_sync(
-        &self,
-        request: reqwest::blocking::RequestBuilder,
-    ) -> reqwest::blocking::RequestBuilder {
-        let user_agent = format!(
-            "ivangabriele/mistralai-client-rs/{}",
-            env!("CARGO_PKG_VERSION")
-        );
-
-        let request_builder = request
-            .bearer_auth(&self.api_key)
-            .header("Accept", "application/json")
-            .header("Content-Type", "application/json")
-            .header("User-Agent", user_agent);
-
-        request_builder
-    }
-
-    pub fn build_request_async(&self, request: reqwest::RequestBuilder) -> reqwest::RequestBuilder {
-        let user_agent = format!(
-            "ivangabriele/mistralai-client-rs/{}",
-            env!("CARGO_PKG_VERSION")
-        );
-
-        let request_builder = request
-            .bearer_auth(&self.api_key)
-            .header("Accept", "application/json")
-            .header("Content-Type", "application/json")
-            .header("User-Agent", user_agent);
-
-        request_builder
-    }
-
-    pub fn get_sync(&self, path: &str) -> Result<reqwest::blocking::Response, ApiError> {
-        let client_sync = reqwest::blocking::Client::new();
-        let url = format!("{}{}", self.endpoint, path);
-        let request = self.build_request_sync(client_sync.get(url));
-
-        let result = request.send();
-        match result {
-            Ok(response) => {
-                if response.status().is_success() {
-                    Ok(response)
-                } else {
-                    let status = response.status();
-                    let text = response.text().unwrap();
-                    Err(ApiError {
-                        message: format!("{}: {}", status, text),
-                    })
-                }
-            }
-            Err(error) => Err(ApiError {
-                message: error.to_string(),
-            }),
-        }
-    }
-
-    pub async fn get_async(&self, path: &str) -> Result<reqwest::Response, ApiError> {
-        let reqwest_client = reqwest::Client::new();
-        let url = format!("{}{}", self.endpoint, path);
-        let request_builder = reqwest_client.get(url);
-        let request = self.build_request_async(request_builder);
-
-        let result = request.send().await.map_err(|e| self.to_api_error(e));
-        match result {
-            Ok(response) => {
-                if response.status().is_success() {
-                    Ok(response)
-                } else {
-                    let status = response.status();
-                    let text = response.text().await.unwrap_or_default();
-                    Err(ApiError {
-                        message: format!("{}: {}", status, text),
-                    })
-                }
-            }
-            Err(error) => Err(ApiError {
-                message: error.to_string(),
-            }),
-        }
-    }
-
-    pub fn post_sync<T: serde::ser::Serialize + std::fmt::Debug>(
-        &self,
-        path: &str,
-        params: &T,
-    ) -> Result<reqwest::blocking::Response, ApiError> {
-        let reqwest_client = reqwest::blocking::Client::new();
-        let url = format!("{}{}", self.endpoint, path);
-        let request_builder = reqwest_client.post(url).json(params);
-        let request = self.build_request_sync(request_builder);
-
-        let result = request.send();
-        match result {
-            Ok(response) => {
-                if response.status().is_success() {
-                    Ok(response)
-                } else {
-                    let status = response.status();
-                    let text = response.text().unwrap_or_default();
-                    Err(ApiError {
-                        message: format!("{}: {}", status, text),
-                    })
-                }
-            }
-            Err(error) => Err(ApiError {
-                message: error.to_string(),
-            }),
-        }
-    }
-
-    pub async fn post_async<T: serde::ser::Serialize + std::fmt::Debug>(
-        &self,
-        path: &str,
-        params: &T,
-    ) -> Result<reqwest::Response, ApiError> {
-        let reqwest_client = reqwest::Client::new();
-        let url = format!("{}{}", self.endpoint, path);
-        let request_builder = reqwest_client.post(url).json(params);
-        let request = self.build_request_async(request_builder);
-
-        let result = request.send().await.map_err(|e| self.to_api_error(e));
-        match result {
-            Ok(response) => {
-                if response.status().is_success() {
-                    Ok(response)
-                } else {
-                    let status = response.status();
-                    let text = response.text().await.unwrap_or_default();
-                    Err(ApiError {
-                        message: format!("{}: {}", status, text),
-                    })
-                }
-            }
-            Err(error) => Err(ApiError {
-                message: error.to_string(),
-            }),
-        }
-    }
-
     pub fn chat(
         &self,
         model: Model,
@@ -235,6 +95,155 @@ impl Client {
         match result {
             Ok(response) => Ok(response),
             Err(error) => Err(self.to_api_error(error)),
+        }
+    }
+
+    pub async fn list_models_async(&self) -> Result<ModelListResponse, ApiError> {
+        let response = self.get_async("/models").await?;
+        let result = response.json::<ModelListResponse>().await;
+        match result {
+            Ok(response) => Ok(response),
+            Err(error) => Err(self.to_api_error(error)),
+        }
+    }
+
+    fn build_request_sync(
+        &self,
+        request: reqwest::blocking::RequestBuilder,
+    ) -> reqwest::blocking::RequestBuilder {
+        let user_agent = format!(
+            "ivangabriele/mistralai-client-rs/{}",
+            env!("CARGO_PKG_VERSION")
+        );
+
+        let request_builder = request
+            .bearer_auth(&self.api_key)
+            .header("Accept", "application/json")
+            .header("Content-Type", "application/json")
+            .header("User-Agent", user_agent);
+
+        request_builder
+    }
+
+    fn build_request_async(&self, request: reqwest::RequestBuilder) -> reqwest::RequestBuilder {
+        let user_agent = format!(
+            "ivangabriele/mistralai-client-rs/{}",
+            env!("CARGO_PKG_VERSION")
+        );
+
+        let request_builder = request
+            .bearer_auth(&self.api_key)
+            .header("Accept", "application/json")
+            .header("Content-Type", "application/json")
+            .header("User-Agent", user_agent);
+
+        request_builder
+    }
+
+    fn get_sync(&self, path: &str) -> Result<reqwest::blocking::Response, ApiError> {
+        let client_sync = reqwest::blocking::Client::new();
+        let url = format!("{}{}", self.endpoint, path);
+        let request = self.build_request_sync(client_sync.get(url));
+
+        let result = request.send();
+        match result {
+            Ok(response) => {
+                if response.status().is_success() {
+                    Ok(response)
+                } else {
+                    let status = response.status();
+                    let text = response.text().unwrap();
+                    Err(ApiError {
+                        message: format!("{}: {}", status, text),
+                    })
+                }
+            }
+            Err(error) => Err(ApiError {
+                message: error.to_string(),
+            }),
+        }
+    }
+
+    async fn get_async(&self, path: &str) -> Result<reqwest::Response, ApiError> {
+        let reqwest_client = reqwest::Client::new();
+        let url = format!("{}{}", self.endpoint, path);
+        let request_builder = reqwest_client.get(url);
+        let request = self.build_request_async(request_builder);
+
+        let result = request.send().await.map_err(|e| self.to_api_error(e));
+        match result {
+            Ok(response) => {
+                if response.status().is_success() {
+                    Ok(response)
+                } else {
+                    let status = response.status();
+                    let text = response.text().await.unwrap_or_default();
+                    Err(ApiError {
+                        message: format!("{}: {}", status, text),
+                    })
+                }
+            }
+            Err(error) => Err(ApiError {
+                message: error.to_string(),
+            }),
+        }
+    }
+
+    fn post_sync<T: serde::ser::Serialize + std::fmt::Debug>(
+        &self,
+        path: &str,
+        params: &T,
+    ) -> Result<reqwest::blocking::Response, ApiError> {
+        let reqwest_client = reqwest::blocking::Client::new();
+        let url = format!("{}{}", self.endpoint, path);
+        let request_builder = reqwest_client.post(url).json(params);
+        let request = self.build_request_sync(request_builder);
+
+        let result = request.send();
+        match result {
+            Ok(response) => {
+                if response.status().is_success() {
+                    Ok(response)
+                } else {
+                    let status = response.status();
+                    let text = response.text().unwrap_or_default();
+                    Err(ApiError {
+                        message: format!("{}: {}", status, text),
+                    })
+                }
+            }
+            Err(error) => Err(ApiError {
+                message: error.to_string(),
+            }),
+        }
+    }
+
+    async fn post_async<T: serde::ser::Serialize + std::fmt::Debug>(
+        &self,
+        path: &str,
+        params: &T,
+    ) -> Result<reqwest::Response, ApiError> {
+        let reqwest_client = reqwest::Client::new();
+        let url = format!("{}{}", self.endpoint, path);
+        let request_builder = reqwest_client.post(url).json(params);
+        let request = self.build_request_async(request_builder);
+
+        let result = request.send().await.map_err(|e| self.to_api_error(e));
+        match result {
+            Ok(response) => {
+                if response.status().is_success() {
+                    Ok(response)
+                } else {
+                    let status = response.status();
+                    let text = response.text().await.unwrap_or_default();
+                    Err(ApiError {
+                        message: format!("{}: {}", status, text),
+                    })
+                }
+            }
+            Err(error) => Err(ApiError {
+                message: error.to_string(),
+            }),
         }
     }
 
