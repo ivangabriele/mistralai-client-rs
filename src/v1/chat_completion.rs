@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::v1::common;
+use crate::v1::{common, constants};
 
 #[derive(Debug)]
 pub struct ChatCompletionParams {
@@ -29,7 +29,7 @@ impl Default for ChatCompletionParams {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ChatCompletionRequest {
     pub messages: Vec<ChatCompletionMessage>,
-    pub model: String,
+    pub model: constants::Model,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tools: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -51,7 +51,7 @@ pub struct ChatCompletionRequest {
 }
 impl ChatCompletionRequest {
     pub fn new(
-        model: String,
+        model: constants::Model,
         messages: Vec<ChatCompletionMessage>,
         options: Option<ChatCompletionParams>,
     ) -> Self {
@@ -85,7 +85,7 @@ pub struct ChatCompletionResponse {
     pub object: String,
     /// Unix timestamp (in seconds).
     pub created: u32,
-    pub model: String,
+    pub model: constants::Model,
     pub choices: Vec<ChatCompletionChoice>,
     pub usage: common::ResponseUsage,
 }

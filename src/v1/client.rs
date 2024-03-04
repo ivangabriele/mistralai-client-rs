@@ -5,7 +5,8 @@ use crate::v1::{
     chat_completion::{
         ChatCompletionMessage, ChatCompletionParams, ChatCompletionRequest, ChatCompletionResponse,
     },
-    constants::API_URL_BASE,
+    constants::{EmbedModel, Model, API_URL_BASE},
+    embedding::{EmbeddingRequest, EmbeddingRequestOptions, EmbeddingResponse},
     model_list::ModelListResponse,
 };
 
@@ -59,6 +60,8 @@ impl Client {
         let result = request.send();
         match result {
             Ok(response) => {
+                print!("{:?}", response.as_str().unwrap());
+
                 if (200..=299).contains(&response.status_code) {
                     Ok(response)
                 } else {
@@ -88,31 +91,8 @@ impl Client {
         let result = request.with_json(params).unwrap().send();
         match result {
             Ok(response) => {
-                // print!("{:?}", response.as_str().unwrap());
+                print!("{:?}", response.as_str().unwrap());
 
-                if (200..=299).contains(&response.status_code) {
-                    Ok(response)
-                } else {
-                    Err(APIError {
-                        message: format!(
-                            "{}: {}",
-                            response.status_code,
-                            response.as_str().unwrap()
-                        ),
-                    })
-                }
-            }
-            Err(error) => Err(self.new_error(error)),
-        }
-    }
-
-    pub fn delete(&self, path: &str) -> Result<Response, APIError> {
-        let url = format!("{}{}", self.endpoint, path);
-        let request = self.build_request(minreq::post(url));
-
-        let result = request.send();
-        match result {
-            Ok(response) => {
                 if (200..=299).contains(&response.status_code) {
                     Ok(response)
                 } else {
@@ -131,7 +111,7 @@ impl Client {
 
     pub fn chat(
         &self,
-        model: String,
+        model: Model,
         messages: Vec<ChatCompletionMessage>,
         options: Option<ChatCompletionParams>,
     ) -> Result<ChatCompletionResponse, APIError> {
@@ -139,6 +119,22 @@ impl Client {
 
         let response = self.post("/chat/completions", &request)?;
         let result = response.json::<ChatCompletionResponse>();
+        match result {
+            Ok(response) => Ok(response),
+            Err(error) => Err(self.new_error(error)),
+        }
+    }
+
+    pub fn embeddings(
+        &self,
+        model: EmbedModel,
+        input: Vec<String>,
+        options: Option<EmbeddingRequestOptions>,
+    ) -> Result<EmbeddingResponse, APIError> {
+        let request = EmbeddingRequest::new(model, input, options);
+
+        let response = self.post("/embeddings", &request)?;
+        let result = response.json::<EmbeddingResponse>();
         match result {
             Ok(response) => Ok(response),
             Err(error) => Err(self.new_error(error)),

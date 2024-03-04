@@ -14,4 +14,12 @@ fn test_list_models() {
 
     expect!(response.object).to_be("list".to_string());
     expect!(response.data.len()).to_be_greater_than(0);
+
+    // let open_mistral_7b_data_item = response
+    //     .data
+    //     .iter()
+    //     .find(|item| item.id == "open-mistral-7b")
+    //     .unwrap();
+
+    // expect!(open_mistral_7b_data_item.id).to_be("open-mistral-7b".to_string());
 }

@@ -26,7 +26,7 @@ Rust client for the Mistral AI API.
 
 - [x] Chat without streaming
 - [ ] Chat with streaming
-- [ ] Embedding
+- [x] Embedding
 - [x] List models
 - [ ] Function Calling
 
@@ -66,14 +66,14 @@ fn main() {
 use mistralai_client::v1::{
     chat_completion::{ChatCompletionMessage, ChatCompletionMessageRole, ChatCompletionRequestOptions},
     client::Client,
-    constants::OPEN_MISTRAL_7B,
+    constants::Model,
 };
 
 fn main() {
     // This example suppose you have set the `MISTRAL_API_KEY` environment variable.
     let client = Client::new(None, None, None, None);
 
-    let model = OPEN_MISTRAL_7B.to_string();
+    let model = Model::OpenMistral7b;
     let messages = vec![ChatCompletionMessage {
         role: ChatCompletionMessageRole::user,
         content: "Just guess the next word: \"Eiffel ...\"?".to_string(),
@@ -96,7 +96,25 @@ _In progress._
 
 ### Embeddings
 
-_In progress._
+```rs
+use mistralai_client::v1::{client::Client, constants::EmbedModel};
+
+fn main() {
+    // This example suppose you have set the `MISTRAL_API_KEY` environment variable.
+  let client: Client = Client::new(None, None, None, None);
+
+  let model = EmbedModel::MistralEmbed;
+  let input = vec!["Embed this sentence.", "As well as this one."]
+      .iter()
+      .map(|s| s.to_string())
+      .collect();
+  let options = None;
+
+  let response = client.embeddings(model, input, options).unwrap();
+  println!("Embeddings: {:?}", response.data);
+  // => "Embeddings: [{...}, {...}]"
+}
+```
 
 ### List models
 
