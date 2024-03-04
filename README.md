@@ -16,19 +16,26 @@ Rust client for the Mistral AI API.
     - [As a client argument](#as-a-client-argument)
 - [Usage](#usage)
   - [Chat without streaming](#chat-without-streaming)
+  - [Chat without streaming (async)](#chat-without-streaming-async)
   - [Chat with streaming](#chat-with-streaming)
   - [Embeddings](#embeddings)
+  - [Embeddings (async)](#embeddings-async)
   - [List models](#list-models)
+  - [List models (async)](#list-models-async)
 
 ---
 
 ## Supported APIs
 
 - [x] Chat without streaming
+- [x] Chat without streaming (async)
 - [ ] Chat with streaming
 - [x] Embedding
+- [ ] Embedding (async)
 - [x] List models
+- [ ] List models (async)
 - [ ] Function Calling
+- [ ] Function Calling (async)
 
 ## Installation
 
@@ -90,6 +97,37 @@ fn main() {
 }
 ```
 
+### Chat without streaming (async)
+
+```rs
+use mistralai_client::v1::{
+    chat_completion::{ChatCompletionMessage, ChatCompletionMessageRole, ChatCompletionRequestOptions},
+    client::Client,
+    constants::Model,
+};
+
+#[tokio::main]
+async fn main() {
+    // This example suppose you have set the `MISTRAL_API_KEY` environment variable.
+    let client = Client::new(None, None, None, None).unwrap();
+
+    let model = Model::OpenMistral7b;
+    let messages = vec![ChatCompletionMessage {
+        role: ChatCompletionMessageRole::user,
+        content: "Just guess the next word: \"Eiffel ...\"?".to_string(),
+    }];
+    let options = ChatCompletionRequestOptions {
+        temperature: Some(0.0),
+        random_seed: Some(42),
+        ..Default::default()
+    };
+
+    let result = client.chat(model, messages, Some(options)).await.unwrap();
+    println!("Assistant: {}", result.choices[0].message.content);
+    // => "Assistant: Tower. [...]"
+}
+```
+
 ### Chat with streaming
 
 _In progress._
@@ -116,6 +154,10 @@ fn main() {
 }
 ```
 
+### Embeddings (async)
+
+_In progress._
+
 ### List models
 
 ```rs
@@ -130,3 +172,7 @@ fn main() {
     // => "First Model ID: open-mistral-7b"
 }
 ```
+
+### List models (async)
+
+_In progress._

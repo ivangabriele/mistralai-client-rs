@@ -1,5 +1,6 @@
 use crate::v1::error::ApiError;
 use minreq::Response;
+use reqwest::{Client as ReqwestClient, Error as ReqwestError};
 
 use crate::v1::{
     chat_completion::{
@@ -57,7 +58,7 @@ impl Client {
         request
     }
 
-    pub fn get(&self, path: &str) -> Result<Response, ApiError> {
+    pub fn get_sync(&self, path: &str) -> Result<Response, ApiError> {
         let url = format!("{}{}", self.endpoint, path);
         let request = self.build_request(minreq::get(url));
 
@@ -78,11 +79,11 @@ impl Client {
                     })
                 }
             }
-            Err(error) => Err(self.new_error(error)),
+            Err(error) => Err(self.new_minreq_error(error)),
         }
     }
 
-    pub fn post<T: serde::ser::Serialize + std::fmt::Debug>(
+    pub fn post_sync<T: serde::ser::Serialize + std::fmt::Debug>(
         &self,
         path: &str,
         params: &T,
@@ -109,7 +110,7 @@ impl Client {
                     })
                 }
             }
-            Err(error) => Err(self.new_error(error)),
+            Err(error) => Err(self.new_minreq_error(error)),
         }
     }
 
@@ -121,11 +122,46 @@ impl Client {
     ) -> Result<ChatCompletionResponse, ApiError> {
         let request = ChatCompletionRequest::new(model, messages, options);
 
-        let response = self.post("/chat/completions", &request)?;
+        let response = self.post_sync("/chat/completions", &request)?;
         let result = response.json::<ChatCompletionResponse>();
         match result {
             Ok(response) => Ok(response),
-            Err(error) => Err(self.new_error(error)),
+            Err(error) => Err(self.new_minreq_error(error)),
+        }
+    }
+
+    pub async fn chat_async(
+        &self,
+        model: Model,
+        messages: Vec<ChatCompletionMessage>,
+        options: Option<ChatCompletionParams>,
+    ) -> Result<ChatCompletionResponse, ApiError> {
+        let request = ChatCompletionRequest::new(model, messages, options);
+        let client = ReqwestClient::new();
+
+        let response = client
+            .post(format!("{}{}", self.endpoint, "/chat/completions"))
+            .json(&request)
+            .bearer_auth(&self.api_key)
+            .header(
+                "User-Agent",
+                format!("mistralai-client-rs/{}", env!("CARGO_PKG_VERSION")),
+            )
+            .send()
+            .await
+            .map_err(|e| self.new_reqwest_error(e))?;
+
+        if response.status().is_success() {
+            response
+                .json::<ChatCompletionResponse>()
+                .await
+                .map_err(|e| self.new_reqwest_error(e))
+        } else {
+            let status = response.status();
+            let text = response.text().await.unwrap_or_default();
+            Err(ApiError {
+                message: format!("{}: {}", status, text),
+            })
         }
     }
 
@@ -137,24 +173,30 @@ impl Client {
     ) -> Result<EmbeddingResponse, ApiError> {
         let request = EmbeddingRequest::new(model, input, options);
 
-        let response = self.post("/embeddings", &request)?;
+        let response = self.post_sync("/embeddings", &request)?;
         let result = response.json::<EmbeddingResponse>();
         match result {
             Ok(response) => Ok(response),
-            Err(error) => Err(self.new_error(error)),
+            Err(error) => Err(self.new_minreq_error(error)),
         }
     }
 
     pub fn list_models(&self) -> Result<ModelListResponse, ApiError> {
-        let response = self.get("/models")?;
+        let response = self.get_sync("/models")?;
         let result = response.json::<ModelListResponse>();
         match result {
             Ok(response) => Ok(response),
-            Err(error) => Err(self.new_error(error)),
+            Err(error) => Err(self.new_minreq_error(error)),
         }
     }
 
-    fn new_error(&self, err: minreq::Error) -> ApiError {
+    fn new_minreq_error(&self, err: minreq::Error) -> ApiError {
+        ApiError {
+            message: err.to_string(),
+        }
+    }
+
+    fn new_reqwest_error(&self, err: ReqwestError) -> ApiError {
         ApiError {
             message: err.to_string(),
         }
