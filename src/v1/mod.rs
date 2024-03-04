@@ -3,4 +3,4 @@ pub mod client;
 pub mod common;
 pub mod constants;
 pub mod error;
-pub mod list_models;
+pub mod model_list;

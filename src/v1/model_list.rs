@@ -1,19 +1,19 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct ListModelsResponse {
+pub struct ModelListResponse {
     pub object: String,
-    pub data: Vec<ListModelsModel>,
+    pub data: Vec<ModelListData>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct ListModelsModel {
+pub struct ModelListData {
     pub id: String,
     pub object: String,
     /// Unix timestamp (in seconds).
     pub created: u32,
     pub owned_by: String,
-    pub permission: Vec<ListModelsModelPermission>,
+    pub permission: Vec<ModelListDataPermission>,
     // TODO Check this prop (seen in API responses but undocumented).
     // pub root: ???,
     // TODO Check this prop (seen in API responses but undocumented).
@@ -21,7 +21,7 @@ pub struct ListModelsModel {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct ListModelsModelPermission {
+pub struct ModelListDataPermission {
     pub id: String,
     pub object: String,
     /// Unix timestamp (in seconds).

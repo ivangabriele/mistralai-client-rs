@@ -6,7 +6,7 @@ use crate::v1::{
         ChatCompletionMessage, ChatCompletionParams, ChatCompletionRequest, ChatCompletionResponse,
     },
     constants::API_URL_BASE,
-    list_models::ListModelsResponse,
+    model_list::ModelListResponse,
 };
 
 pub struct Client {
@@ -145,9 +145,9 @@ impl Client {
         }
     }
 
-    pub fn list_models(&self) -> Result<ListModelsResponse, APIError> {
+    pub fn list_models(&self) -> Result<ModelListResponse, APIError> {
         let response = self.get("/models")?;
-        let result = response.json::<ListModelsResponse>();
+        let result = response.json::<ModelListResponse>();
         match result {
             Ok(response) => Ok(response),
             Err(error) => Err(self.new_error(error)),
