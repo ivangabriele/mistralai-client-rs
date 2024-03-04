@@ -1,2 +1,4 @@
+# https://github.com/crate-ci/cargo-release/blob/master/docs/reference.md
 allow-branch = ["main"]
+pre-release-commit-message = "ci(release): v{{version}}"
 pre-release-replacements = [{ file = "CHANGELOG.md", search = "## \\[\\]", replace = "## [{{version}}]" }]
