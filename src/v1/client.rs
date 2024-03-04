@@ -186,7 +186,7 @@ impl Client {
         let request_builder = reqwest_client.get(url);
         let request = self.build_request_async(request_builder);
 
-        let result = request.send().await.map_err(|e| self.to_api_error(e));
+        let result = request.send().await;
         match result {
             Ok(response) => {
                 if response.status().is_success() {
@@ -244,7 +244,7 @@ impl Client {
         let request_builder = reqwest_client.post(url).json(params);
         let request = self.build_request_async(request_builder);
 
-        let result = request.send().await.map_err(|e| self.to_api_error(e));
+        let result = request.send().await;
         match result {
             Ok(response) => {
                 if response.status().is_success() {
