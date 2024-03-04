@@ -3,7 +3,7 @@ use mistralai_client::v1::{client::Client, constants::EmbedModel};
 
 #[test]
 fn test_client_embeddings() {
-    let client: Client = Client::new(None, None, None, None);
+    let client: Client = Client::new(None, None, None, None).unwrap();
 
     let model = EmbedModel::MistralEmbed;
     let input = vec!["Embed this sentence.", "As well as this one."]

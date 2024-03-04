@@ -7,7 +7,7 @@ use mistralai_client::v1::{
 
 #[test]
 fn test_client_chat() {
-    let client = Client::new(None, None, None, None);
+    let client = Client::new(None, None, None, None).unwrap();
 
     let model = Model::OpenMistral7b;
     let messages = vec![ChatCompletionMessage {

@@ -24,21 +24,21 @@ impl Client {
         endpoint: Option<String>,
         max_retries: Option<u32>,
         timeout: Option<u32>,
-    ) -> Self {
-        let api_key = api_key.unwrap_or(
-            std::env::var("MISTRAL_API_KEY")
-                .unwrap_or_else(|_| panic!("{}", ClientError::ApiKeyError)),
-        );
+    ) -> Result<Self, ClientError> {
+        let api_key = api_key.unwrap_or(match std::env::var("MISTRAL_API_KEY") {
+            Ok(api_key_from_env) => api_key_from_env,
+            Err(_) => return Err(ClientError::ApiKeyError),
+        });
         let endpoint = endpoint.unwrap_or(API_URL_BASE.to_string());
         let max_retries = max_retries.unwrap_or(5);
         let timeout = timeout.unwrap_or(120);
 
-        Self {
+        Ok(Self {
             api_key,
             endpoint,
             max_retries,
             timeout,
-        }
+        })
     }
 
     pub fn build_request(&self, request: minreq::Request) -> minreq::Request {

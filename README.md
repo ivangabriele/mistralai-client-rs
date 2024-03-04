@@ -54,7 +54,7 @@ use mistralai_client::v1::client::Client;
 fn main() {
     let api_key = "your_api_key";
 
-    let client = Client::new(Some(api_key), None, None, None);
+    let client = Client::new(Some(api_key), None, None, None).unwrap();
 }
 ```
 
@@ -71,7 +71,7 @@ use mistralai_client::v1::{
 
 fn main() {
     // This example suppose you have set the `MISTRAL_API_KEY` environment variable.
-    let client = Client::new(None, None, None, None);
+    let client = Client::new(None, None, None, None).unwrap();
 
     let model = Model::OpenMistral7b;
     let messages = vec![ChatCompletionMessage {
@@ -101,7 +101,7 @@ use mistralai_client::v1::{client::Client, constants::EmbedModel};
 
 fn main() {
     // This example suppose you have set the `MISTRAL_API_KEY` environment variable.
-  let client: Client = Client::new(None, None, None, None);
+  let client: Client = Client::new(None, None, None, None).unwrap();
 
   let model = EmbedModel::MistralEmbed;
   let input = vec!["Embed this sentence.", "As well as this one."]
@@ -123,7 +123,7 @@ use mistralai_client::v1::client::Client;
 
 fn main() {
     // This example suppose you have set the `MISTRAL_API_KEY` environment variable.
-    let client = Client::new(None, None, None, None);
+    let client = Client::new(None, None, None, None).unwrap();
 
     let result = client.list_models().unwrap();
     println!("First Model ID: {:?}", result.data[0].id);

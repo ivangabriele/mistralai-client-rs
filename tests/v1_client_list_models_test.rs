@@ -3,7 +3,7 @@ use mistralai_client::v1::client::Client;
 
 #[test]
 fn test_client_list_models() {
-    let client = Client::new(None, None, None, None);
+    let client = Client::new(None, None, None, None).unwrap();
 
     let response = client.list_models().unwrap();
 
