@@ -1,3 +1,17 @@
+## [](https://github.com/ivangabriele/mistralai-client-rs/compare/v0.3.0...v) (2024-03-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* `Client::new()` now returns a `Result`.
+* `APIError` is renamed to `ApiError`.
+
+### Features
+
+* add client.chat_async() method ([1dd59f6](https://github.com/ivangabriele/mistralai-client-rs/commit/1dd59f67048c10458ab0382af8fdfe4ed21c82fa))
+* add missing api key error ([1deab88](https://github.com/ivangabriele/mistralai-client-rs/commit/1deab88251fc706e0415a5e416ab9aee4b52f6f3))
+* wrap Client::new() return in a Result ([3387618](https://github.com/ivangabriele/mistralai-client-rs/commit/33876183e41340f426aa1dd1b6d8b5c05c8e15b9))
+
 ## [0.3.0](https://github.com/ivangabriele/mistralai-client-rs/compare/v0.2.0...v) (2024-03-04)
 
 
