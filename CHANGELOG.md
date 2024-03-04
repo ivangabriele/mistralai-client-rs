@@ -1,3 +1,17 @@
+## [](https://github.com/ivangabriele/mistralai-client-rs/compare/v0.5.0...v) (2024-03-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* You can't set the `stream` option for `client.chat*()`.
+
+Either use `client.chat_stream()` if you want to use streams
+or use `client.chat()` / `client.chat_async()` otherwise.
+
+### Features
+
+* add client.chat_stream() method ([4a4219d](https://github.com/ivangabriele/mistralai-client-rs/commit/4a4219d3eaa8f0ae953ee6182b36bf464d1c4a21))
+
 ## [0.5.0](https://github.com/ivangabriele/mistralai-client-rs/compare/v0.4.0...v) (2024-03-04)
 
 
