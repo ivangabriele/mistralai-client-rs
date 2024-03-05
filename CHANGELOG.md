@@ -1,3 +1,15 @@
+## [](https://github.com/ivangabriele/mistralai-client-rs/compare/v0.6.0...v) (2024-03-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* - Rename `ClientError.ApiKeyError` to `MissingApiKey`.
+- Rename `ClientError.ReadResponseTextError` to `ClientError.UnreadableResponseText`.
+
+### Bug Fixes
+
+* fix failure when api key as param and not env ([ef5d475](https://github.com/ivangabriele/mistralai-client-rs/commit/ef5d475e2d0e3fe040c44d6adabf7249e9962835))
+
 ## [0.6.0](https://github.com/ivangabriele/mistralai-client-rs/compare/v0.5.0...v) (2024-03-04)
 
 
