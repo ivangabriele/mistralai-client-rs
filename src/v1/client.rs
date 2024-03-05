@@ -70,6 +70,36 @@ impl Client {
         })
     }
 
+    /// Synchronously sends a chat completion request and returns the response.
+    ///
+    /// # Arguments
+    ///
+    /// * `model` - The [Model] to use for the chat completion.
+    /// * `messages` - A vector of [ChatMessage] to send as part of the chat.
+    /// * `options` - Optional [ChatCompletionParams] to customize the request.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [Result] containing the `ChatCompletionResponse` if the request is successful,
+    /// or an [ApiError] if there is an error.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use mistralai_client::v1::{
+    ///     chat_completion::{ChatMessage, ChatMessageRole},
+    ///     client::Client,
+    ///     constants::Model,
+    /// };
+    ///
+    /// let client = Client::new(None, None, None, None).unwrap();
+    /// let messages = vec![ChatMessage {
+    ///     role: ChatMessageRole::user,
+    ///     content: "Hello, world!".to_string(),
+    /// }];
+    /// let response = client.chat(Model::OpenMistral7b, messages, None).unwrap();
+    /// println!("{}: {}", response.choices[0].message.role, response.choices[0].message.content);
+    /// ```
     pub fn chat(
         &self,
         model: Model,
@@ -90,9 +120,14 @@ impl Client {
     ///
     /// # Arguments
     ///
-    /// * `model` - The model to use for the chat completion.
-    /// * `messages` - A vector of `ChatMessage` to send as part of the chat.
-    /// * `options` - Optional `ChatCompletionParams` to customize the request.
+    /// * `model` - The [Model] to use for the chat completion.
+    /// * `messages` - A vector of [ChatMessage] to send as part of the chat.
+    /// * `options` - Optional [ChatCompletionParams] to customize the request.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [Result] containing a `Stream` of `ChatCompletionStreamChunk` if the request is successful,
+    /// or an [ApiError] if there is an error.
     ///
     /// # Examples
     ///
@@ -130,6 +165,48 @@ impl Client {
         }
     }
 
+    /// Asynchronously sends a chat completion request and returns a stream of message chunks.
+    ///
+    /// # Arguments
+    ///
+    /// * `model` - The [Model] to use for the chat completion.
+    /// * `messages` - A vector of [ChatMessage] to send as part of the chat.
+    /// * `options` - Optional [ChatCompletionParams] to customize the request.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [Result] containing a `Stream` of `ChatCompletionStreamChunk` if the request is successful,
+    /// or an [ApiError] if there is an error.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use futures::stream::StreamExt;
+    /// use mistralai_client::v1::{
+    ///     chat_completion::{ChatMessage, ChatMessageRole},
+    ///     client::Client,
+    ///     constants::Model,
+    /// };
+    ///
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     let client = Client::new(None, None, None, None).unwrap();
+    ///     let messages = vec![ChatMessage {
+    ///         role: ChatMessageRole::user,
+    ///         content: "Hello, world!".to_string(),
+    ///     }];
+    ///     let mut stream = client.chat_stream(Model::OpenMistral7b, messages, None).await.unwrap();
+    ///     while let Some(chunk_result) = stream.next().await {
+    ///         match chunk_result {
+    ///             Ok(chunk) => {
+    ///                 print!("{}", chunk.choices[0].delta.content);
+    ///             }
+    ///             Err(error) => {
+    ///                 println!("Error: {}", error.message);
+    ///             }
+    ///         }
+    ///     }
+    /// }
     pub async fn chat_stream(
         &self,
         model: Model,
