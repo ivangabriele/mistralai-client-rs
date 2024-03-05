@@ -36,10 +36,10 @@ release-major:
 	$(call RELEASE_TEMPLATE,major)
 
 test:
-	@$(source_env_if_not_ci) && cargo test --nocapture --no-fail-fast
+	@$(source_env_if_not_ci) && cargo test --no-fail-fast
 test-cover:
-	@$(source_env_if_not_ci) && cargo tarpaulin --frozen --out Xml
+	@$(source_env_if_not_ci) && cargo tarpaulin --frozen --out Xml --skip-clean
 test-doc:
 	@$(source_env_if_not_ci) && cargo test --doc --no-fail-fast
 test-watch:
-	@$(source_env_if_not_ci) && cargo watch -x "test -- --nocapture"
+	@source ./.env && cargo watch -x "test -- --nocapture"
