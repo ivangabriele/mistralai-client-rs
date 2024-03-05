@@ -38,7 +38,8 @@ Then edit the `.env` file to set your `MISTRAL_API_KEY`.
 
 ### Optional requirements
 
-- [cargo-watch](https://github.com/watchexec/cargo-watch#install) for `make test-*-watch`.
+- [cargo-llvm-cov](https://github.com/taiki-e/cargo-llvm-cov?tab=readme-ov-file#installation) for `make test-cover`
+- [cargo-watch](https://github.com/watchexec/cargo-watch#install) for `make test-watch`.
 
 ### Test
 

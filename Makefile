@@ -38,7 +38,7 @@ release-major:
 test:
 	@$(source_env_if_not_ci) && cargo test --no-fail-fast
 test-cover:
-	@$(source_env_if_not_ci) && cargo tarpaulin --frozen --out Xml --skip-clean
+	@$(source_env_if_not_ci) && cargo llvm-cov
 test-doc:
 	@$(source_env_if_not_ci) && cargo test --doc --no-fail-fast
 test-watch:
