@@ -6,10 +6,6 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    container:
-      image: xd009642/tarpaulin
-      # https://github.com/xd009642/tarpaulin#github-actions
-      options: --security-opt seccomp=unconfined
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -19,10 +15,6 @@ jobs:
           toolchain: 1.76.0
       - name: Install cargo-llvm-cov
         uses: taiki-e/install-action@cargo-llvm-cov
-      - name: Run documentation tests
-        run: make test-doc
-        env:
-          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
       - name: Run tests (with coverage)
         run: cargo llvm-cov --lcov --output-path ./lcov.info
         env:
@@ -33,3 +25,18 @@ jobs:
           fail_ci_if_error: true
           files: ./lcov.info
           token: ${{ secrets.CODECOV_TOKEN }}
+
+  test_documentation:
+    name: Test Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: 1.76.0
+      - name: Run documentation tests
+        run: make test-doc
+        env:
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
