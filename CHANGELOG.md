@@ -1,3 +1,14 @@
+## [](https://github.com/ivangabriele/mistralai-client-rs/compare/v0.7.0...v) (2024-03-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* Too many to count in this version. Check the README examples.
+
+### Features
+
+* add function calling support to client.chat() & client.chat_async() ([74bf8a9](https://github.com/ivangabriele/mistralai-client-rs/commit/74bf8a96ee31f9d54ee3d7404619e803a182918b))
+
 ## [0.7.0](https://github.com/ivangabriele/mistralai-client-rs/compare/v0.6.0...v) (2024-03-05)
 
 
