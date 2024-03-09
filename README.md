@@ -182,7 +182,7 @@ async fn main() {
     let stream_result = client
         .chat_stream(model, messages, Some(options))
         .await
-        .expect("Failed to create stream.");
+        .unwrap();
     stream_result
         .for_each(|chunk_result| async {
             match chunk_result {
@@ -197,7 +197,6 @@ async fn main() {
             }
         })
         .await;
-
     print!("\n") // To persist the last chunk output.
 }
 ```
