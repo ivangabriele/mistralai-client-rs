@@ -1,5 +1,8 @@
 use serde::{Deserialize, Serialize};
 
+// -----------------------------------------------------------------------------
+// Response
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct ModelListResponse {
     pub object: String,

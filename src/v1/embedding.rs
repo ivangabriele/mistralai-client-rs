@@ -2,6 +2,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::v1::{common, constants};
 
+// -----------------------------------------------------------------------------
+// Request
+
 #[derive(Debug)]
 pub struct EmbeddingRequestOptions {
     pub encoding_format: Option<EmbeddingRequestEncodingFormat>,
@@ -42,6 +45,9 @@ impl EmbeddingRequest {
 pub enum EmbeddingRequestEncodingFormat {
     float,
 }
+
+// -----------------------------------------------------------------------------
+// Response
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct EmbeddingResponse {
