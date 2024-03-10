@@ -1,17 +1,16 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: ''
-labels: ''
-assignees: ''
-
+title: ""
+labels: "bug"
+assignees: ""
 ---
 
 **Describe the bug**
 
-A clear and concise description of what the bug is.
+...
 
-**To Reproduce**
+**Reproduction**
 
 Steps to reproduce the behavior:
 
@@ -20,7 +19,7 @@ Steps to reproduce the behavior:
 
 **Expected behavior**
 
-A clear and concise description of what you expected to happen.
+...
 
 **Screenshots**
 
@@ -32,4 +31,4 @@ If applicable, what version did you use?
 
 **Environment**
 
-Add useful information about your configuration and environment here.
+If applicable, add relevant information about your config and environment here.
