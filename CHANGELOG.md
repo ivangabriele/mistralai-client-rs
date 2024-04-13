@@ -1,4 +1,4 @@
-## [](https://github.com/ivangabriele/mistralai-client-rs/compare/v0.8.0...v) (2024-04-13)
+## [0.9.0](https://github.com/ivangabriele/mistralai-client-rs/compare/v0.8.0...v) (2024-04-13)
 
 
 ### ⚠ BREAKING CHANGES
