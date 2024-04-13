@@ -1,3 +1,15 @@
+## [](https://github.com/ivangabriele/mistralai-client-rs/compare/v0.8.0...v) (2024-04-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* `Model.OpenMistral8x7b` has been renamed to `Model.OpenMixtral8x7b`.
+
+### Bug Fixes
+
+* **deps:** update rust crate reqwest to 0.12.0 ([#6](https://github.com/ivangabriele/mistralai-client-rs/issues/6)) ([fccd59c](https://github.com/ivangabriele/mistralai-client-rs/commit/fccd59c0cc783edddec1b404363faabb009eecd6))
+* fix typo in OpenMixtral8x7b model name ([#8](https://github.com/ivangabriele/mistralai-client-rs/issues/8)) ([6a99eca](https://github.com/ivangabriele/mistralai-client-rs/commit/6a99eca49c0cc8e3764a56f6dfd7762ec44a4c3b))
+
 ## [0.8.0](https://github.com/ivangabriele/mistralai-client-rs/compare/v0.7.0...v) (2024-03-09)
 
 
