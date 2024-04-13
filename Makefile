@@ -14,7 +14,7 @@ define source_env_if_not_ci
 endef
 
 define RELEASE_TEMPLATE
-	conventional-changelog -p conventionalcommits -i ./CHANGELOG.md -s
+	npx conventional-changelog -p conventionalcommits -i ./CHANGELOG.md -s
 	git add .
 	git commit -m "docs(changelog): update"
 	git push origin HEAD
