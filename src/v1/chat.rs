@@ -38,6 +38,20 @@ pub enum ChatMessageRole {
     User,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ResponseFormat {
+    #[serde(rename = "type")]
+    pub type_: String,
+}
+
+impl ResponseFormat {
+    pub fn json_object() -> Self {
+        Self {
+            type_: "json_object".to_string(),
+        }
+    }
+}
+
 // -----------------------------------------------------------------------------
 // Request
 
@@ -50,6 +64,7 @@ pub struct ChatParams {
     pub tool_choice: Option<tool::ToolChoice>,
     pub tools: Option<Vec<tool::Tool>>,
     pub top_p: Option<f32>,
+    pub response_format: Option<ResponseFormat>,
 }
 impl Default for ChatParams {
     fn default() -> Self {
@@ -61,6 +76,21 @@ impl Default for ChatParams {
             tool_choice: None,
             tools: None,
             top_p: None,
+            response_format: None,
+        }
+    }
+}
+impl ChatParams {
+    pub fn json_default() -> Self {
+        Self {
+            max_tokens: None,
+            random_seed: None,
+            safe_prompt: None,
+            temperature: None,
+            tool_choice: None,
+            tools: None,
+            top_p: None,
+            response_format: Some(ResponseFormat::json_object()),
         }
     }
 }
@@ -87,8 +117,8 @@ pub struct ChatRequest {
     pub top_p: Option<f32>,
     // TODO Check this prop (seen in official Python client but not in API doc).
     // pub tool_choice: Option<String>,
-    // TODO Check this prop (seen in official Python client but not in API doc).
-    // pub response_format: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub response_format: Option<ResponseFormat>,
 }
 impl ChatRequest {
     pub fn new(
@@ -105,6 +135,7 @@ impl ChatRequest {
             tool_choice,
             tools,
             top_p,
+            response_format,
         } = options.unwrap_or_default();
 
         Self {
@@ -119,6 +150,7 @@ impl ChatRequest {
             tool_choice,
             tools,
             top_p,
+            response_format,
         }
     }
 }
