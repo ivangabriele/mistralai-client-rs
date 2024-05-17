@@ -31,10 +31,14 @@ impl ChatMessage {
 
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
 pub enum ChatMessageRole {
+    #[serde(rename = "system")]
+    System,
     #[serde(rename = "assistant")]
     Assistant,
     #[serde(rename = "user")]
     User,
+    #[serde(rename = "tool")]
+    Tool,
 }
 
 // -----------------------------------------------------------------------------
