@@ -29,6 +29,7 @@ impl ChatMessage {
     }
 }
 
+/// See the [Mistral AI API documentation](https://docs.mistral.ai/capabilities/completion/#chat-messages) for more information.
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
 pub enum ChatMessageRole {
     #[serde(rename = "system")]
