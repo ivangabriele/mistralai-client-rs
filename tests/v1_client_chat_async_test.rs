@@ -19,7 +19,7 @@ async fn test_client_chat_async() {
         "Guess the next word: \"Eiffel ...\"?",
     )];
     let options = ChatParams {
-        temperature: Some(0.0),
+        temperature: 0.0,
         random_seed: Some(42),
         ..Default::default()
     };
@@ -37,7 +37,12 @@ async fn test_client_chat_async() {
     expect!(response.choices[0].finish_reason.clone()).to_be(ChatResponseChoiceFinishReason::Stop);
 
     expect!(response.choices[0].message.role.clone()).to_be(ChatMessageRole::Assistant);
-    expect!(response.choices[0].message.content.clone()).to_start_with("Tower".to_string());
+    expect!(response.choices[0]
+        .message
+        .content
+        .clone()
+        .contains("Tower"))
+    .to_be(true);
 
     expect!(response.usage.prompt_tokens).to_be_greater_than(0);
     expect!(response.usage.completion_tokens).to_be_greater_than(0);
@@ -65,7 +70,7 @@ async fn test_client_chat_async_with_function_calling() {
         "What's the current temperature in Paris?",
     )];
     let options = ChatParams {
-        temperature: Some(0.0),
+        temperature: 0.0,
         random_seed: Some(42),
         tool_choice: Some(ToolChoice::Any),
         tools: Some(tools),

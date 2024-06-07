@@ -7,6 +7,10 @@
 
 Rust client for the Mistral AI API.
 
+> [!IMPORTANT]  
+> While we are in v0, minor versions may introduce breaking changes.  
+> Please, refer to the [CHANGELOG.md](./CHANGELOG.md) for more information.
+
 ---
 
 - [Supported APIs](#supported-apis)

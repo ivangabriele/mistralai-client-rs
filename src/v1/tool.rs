@@ -115,12 +115,16 @@ pub enum ToolType {
     Function,
 }
 
+/// An enum representing how functions should be called.
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
 pub enum ToolChoice {
+    /// The model is forced to call a function.
     #[serde(rename = "any")]
     Any,
+    /// The model can choose to either generate a message or call a function.
     #[serde(rename = "auto")]
     Auto,
+    /// The model won't call a function and will generate a message instead.
     #[serde(rename = "none")]
     None,
 }

@@ -15,7 +15,7 @@ fn main() {
         tool_calls: None,
     }];
     let options = ChatParams {
-        temperature: Some(0.0),
+        temperature: 0.0,
         random_seed: Some(42),
         ..Default::default()
     };

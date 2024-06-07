@@ -7,6 +7,10 @@
 
 Rust client for the Mistral AI API.
 
+> [!IMPORTANT]  
+> While we are in v0, minor versions may introduce breaking changes.  
+> Please, refer to the [CHANGELOG.md](./CHANGELOG.md) for more information.
+
 ---
 
 - [Supported APIs](#supported-apis)
@@ -102,7 +106,7 @@ fn main() {
         tool_calls: None,
     }];
     let options = ChatParams {
-        temperature: Some(0.0),
+        temperature: 0.0,
         random_seed: Some(42),
         ..Default::default()
     };
@@ -134,7 +138,7 @@ async fn main() {
         tool_calls: None,
     }];
     let options = ChatParams {
-        temperature: Some(0.0),
+        temperature: 0.0,
         random_seed: Some(42),
         ..Default::default()
     };
@@ -174,7 +178,7 @@ async fn main() {
         tool_calls: None,
     }];
     let options = ChatParams {
-        temperature: Some(0.0),
+        temperature: 0.0,
         random_seed: Some(42),
         ..Default::default()
     };
@@ -259,7 +263,7 @@ fn main() {
         tool_calls: None,
     }];
     let options = ChatParams {
-        temperature: Some(0.0),
+        temperature: 0.0,
         random_seed: Some(42),
         tool_choice: Some(ToolChoice::Auto),
         tools: Some(tools),
@@ -336,7 +340,7 @@ async fn main() {
         tool_calls: None,
     }];
     let options = ChatParams {
-        temperature: Some(0.0),
+        temperature: 0.0,
         random_seed: Some(42),
         tool_choice: Some(ToolChoice::Auto),
         tools: Some(tools),
