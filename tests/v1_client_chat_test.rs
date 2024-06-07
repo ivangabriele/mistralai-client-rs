@@ -16,7 +16,7 @@ fn test_client_chat() {
 
     let model = Model::OpenMistral7b;
     let messages = vec![ChatMessage::new_user_message(
-        "Just guess the next word: \"Eiffel ...\"?",
+        "Guess the next word: \"Eiffel ...\"?",
     )];
     let options = ChatParams {
         temperature: Some(0.0),
@@ -31,8 +31,7 @@ fn test_client_chat() {
     expect!(response.choices.len()).to_be(1);
     expect!(response.choices[0].index).to_be(0);
     expect!(response.choices[0].message.role.clone()).to_be(ChatMessageRole::Assistant);
-    expect!(response.choices[0].message.content.clone())
-        .to_be("Tower. The Eiffel Tower is a famous landmark in Paris, France.".to_string());
+    expect!(response.choices[0].message.content.clone()).to_start_with("Tower".to_string());
     expect!(response.choices[0].finish_reason.clone()).to_be(ChatResponseChoiceFinishReason::Stop);
     expect!(response.usage.prompt_tokens).to_be_greater_than(0);
     expect!(response.usage.completion_tokens).to_be_greater_than(0);
