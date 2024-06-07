@@ -53,20 +53,20 @@ release-major:
 	$(call RELEASE_TEMPLATE,major)
 
 test:
-	@$(source_env_if_not_ci)
+	@$(source_env_if_not_ci) && \
 	cargo test --no-fail-fast
 test-cover:
-	@$(source_env_if_not_ci)
+	@$(source_env_if_not_ci) && \
 	cargo llvm-cov
 test-doc:
-	@$(source_env_if_not_ci)
+	@$(source_env_if_not_ci) && \
 	cargo test --doc --no-fail-fast
 test-examples:
-	@$(source_env_if_not_ci)
-	@for example in $$(ls examples/*.rs | sed 's/examples\/\(.*\)\.rs/\1/'); do \
+	@$(source_env_if_not_ci) && \
+	for example in $$(ls examples/*.rs | sed 's/examples\/\(.*\)\.rs/\1/'); do \
 		echo "Running $$example"; \
 		cargo run --example $$example; \
 	done
 test-watch:
-	@source ./.env
+	@source ./.env && \
 	cargo watch -x "test -- --nocapture"
