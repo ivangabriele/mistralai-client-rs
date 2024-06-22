@@ -1,3 +1,12 @@
+## [](https://github.com/ivangabriele/mistralai-client-rs/compare/v0.10.0...v) (2024-06-22)
+
+### Features
+
+* **constants:** add OpenMixtral8x22b, MistralTiny & CodestralLatest to Model enum ([ecd0c30](https://github.com/ivangabriele/mistralai-client-rs/commit/ecd0c3028fdcfab32b867eb1eed86182f5f4ab81))
+
+### Bug Fixes
+
+* **chat:** implement Clone trait for ChatParams & ResponseFormat ([0df67b1](https://github.com/ivangabriele/mistralai-client-rs/commit/0df67b1b2571fb04b636ce015a2daabe629ff352))
 ## [0.10.0](https://github.com/ivangabriele/mistralai-client-rs/compare/v0.9.0...v) (2024-06-07)
 
 ### ⚠ BREAKING CHANGES
