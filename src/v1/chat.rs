@@ -46,7 +46,7 @@ pub enum ChatMessageRole {
 /// The format that the model must output.
 ///
 /// See the [API documentation](https://docs.mistral.ai/api/#operation/createChatCompletion) for more information.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ResponseFormat {
     #[serde(rename = "type")]
     pub type_: String,
@@ -65,7 +65,7 @@ impl ResponseFormat {
 /// The parameters for the chat request.
 ///
 /// See the [API documentation](https://docs.mistral.ai/api/#operation/createChatCompletion) for more information.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChatParams {
     /// The maximum number of tokens to generate in the completion.
     ///
