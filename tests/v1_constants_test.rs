@@ -5,12 +5,8 @@ use mistralai_client::v1::{
     constants::Model,
 };
 
-mod setup;
-
 #[test]
 fn test_model_constant() {
-    setup::setup();
-
     let models = vec![
         Model::OpenMistral7b,
         Model::OpenMixtral8x7b,
