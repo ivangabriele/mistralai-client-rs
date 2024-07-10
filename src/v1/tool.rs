@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
-use std::{any::Any, collections::HashMap};
+use std::{any::Any, collections::HashMap, fmt::Debug};
 
 // -----------------------------------------------------------------------------
 // Definitions
@@ -135,4 +135,10 @@ pub enum ToolChoice {
 #[async_trait]
 pub trait Function {
     async fn execute(&self, arguments: String) -> Box<dyn Any + Send>;
+}
+
+impl Debug for dyn Function {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Function()")
+    }
 }

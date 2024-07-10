@@ -10,6 +10,7 @@ use std::{
 
 use crate::v1::{chat, chat_stream, constants, embedding, error, model_list, tool, utils};
 
+#[derive(Debug)]
 pub struct Client {
     pub api_key: String,
     pub endpoint: String,
