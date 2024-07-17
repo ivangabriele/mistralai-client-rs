@@ -133,6 +133,6 @@ pub enum ToolChoice {
 // Custom
 
 #[async_trait]
-pub trait Function {
+pub trait Function: Send {
     async fn execute(&self, arguments: String) -> Box<dyn Any + Send>;
 }
