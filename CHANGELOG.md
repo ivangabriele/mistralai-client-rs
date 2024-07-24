@@ -1,3 +1,9 @@
+## [](https://github.com/ivangabriele/mistralai-client-rs/compare/v0.11.0...v) (2024-07-24)
+
+### Features
+
+* implement the Debug trait for Client ([#11](https://github.com/ivangabriele/mistralai-client-rs/issues/11)) ([3afeec1](https://github.com/ivangabriele/mistralai-client-rs/commit/3afeec1d586022e43c7b10906acec5e65927ba7d))
+* mark Function trait as Send ([#12](https://github.com/ivangabriele/mistralai-client-rs/issues/12)) ([8e9f7a5](https://github.com/ivangabriele/mistralai-client-rs/commit/8e9f7a53863879b2ad618e9e5707b198e4f3b135))
 ## [0.11.0](https://github.com/ivangabriele/mistralai-client-rs/compare/v0.10.0...v) (2024-06-22)
 
 ### Features
