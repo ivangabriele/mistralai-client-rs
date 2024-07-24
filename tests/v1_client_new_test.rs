@@ -1,6 +1,11 @@
 use jrest::expect;
 use mistralai_client::v1::{client::Client, error::ClientError};
 
+#[derive(Debug)]
+struct _Foo {
+    _client: Client,
+}
+
 #[test]
 fn test_client_new_with_none_params() {
     let maybe_original_mistral_api_key = std::env::var("MISTRAL_API_KEY").ok();
