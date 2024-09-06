@@ -2,6 +2,10 @@ use serde::{Deserialize, Serialize};
 
 use crate::v1::{common, constants, tool};
 
+pub trait HasChoices {
+    fn choices(&self) -> &[ChatResponseChoice];
+}
+
 // -----------------------------------------------------------------------------
 // Definitions
 
@@ -196,6 +200,11 @@ pub struct ChatResponse {
     pub model: constants::Model,
     pub choices: Vec<ChatResponseChoice>,
     pub usage: common::ResponseUsage,
+}
+impl HasChoices for ChatResponse {
+    fn choices(&self) -> &[ChatResponseChoice] {
+        &self.choices
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

@@ -8,7 +8,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use crate::v1::{chat, chat_stream, constants, embedding, error, model_list, tool, utils};
+use crate::v1::{agent, chat, chat_stream, constants, embedding, error, model_list, tool, utils};
 
 #[derive(Debug)]
 pub struct Client {
@@ -172,6 +172,113 @@ impl Client {
 
         let response = self.post_async("/chat/completions", &request).await?;
         let result = response.json::<chat::ChatResponse>().await;
+        match result {
+            Ok(data) => {
+                utils::debug_pretty_json_from_struct("Response Data", &data);
+
+                self.call_function_if_any_async(data.clone()).await;
+
+                Ok(data)
+            }
+            Err(error) => Err(self.to_api_error(error)),
+        }
+    }
+
+    /// Synchronously sends an agent completion request and returns the response.
+    ///
+    /// # Arguments
+    ///
+    /// * `id` - the id of the agent to use for the completion.
+    /// * `messages` - A vector of [AgentMessage] to send as part of the agent.
+    /// * `options` - Optional [AgentParams] to customize the request.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [Result] containing the `AgentResponse` if the request is successful,
+    /// or an [ApiError] if there is an error.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use mistralai_client::v1::{
+    ///     agent::{AgentMessage, AgentMessageRole},
+    ///     client::Client,
+    /// };
+    ///
+    /// let client = Client::new(None, None, None, None).unwrap();
+    /// let messages = vec![AgentMessage {
+    ///     role: AgentMessageRole::User,
+    ///     content: "Hello, world!".to_string(),
+    ///     tool_calls: None,
+    /// }];
+    /// let response = client.agent(agent_id, messages, None).unwrap();
+    /// println!("{:?}: {}", response.choices[0].message.role, response.choices[0].message.content);
+    /// ```
+    pub fn agent(
+        &self,
+        id: impl AsRef<str>,
+        messages: Vec<agent::AgentMessage>,
+        options: Option<agent::AgentParams>,
+    ) -> Result<agent::AgentResponse, error::ApiError> {
+        let request = agent::AgentRequest::new(id.as_ref(), messages, false, options);
+
+        let response = self.post_sync("/agents/completions", &request)?;
+        let result = response.json::<agent::AgentResponse>();
+        match result {
+            Ok(data) => {
+                utils::debug_pretty_json_from_struct("Response Data", &data);
+
+                self.call_function_if_any(data.clone());
+
+                Ok(data)
+            }
+            Err(error) => Err(self.to_api_error(error)),
+        }
+    }
+
+    /// Asynchronously sends an agent completion request and returns the response.
+    ///
+    /// # Arguments
+    ///
+    /// * `id` - the id of the agent to use for the completion.
+    /// * `messages` - A vector of [AgentMessage] to send as part of the agent.
+    /// * `options` - Optional [AgentParams] to customize the request.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [Result] containing a `Stream` of `AgentStreamChunk` if the request is successful,
+    /// or an [ApiError] if there is an error.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use mistralai_client::v1::{
+    ///     agent::{AgentMessage, AgentMessageRole},
+    ///     client::Client,
+    /// };
+    ///
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     let client = Client::new(None, None, None, None).unwrap();
+    ///     let messages = vec![AgentMessage {
+    ///         role: AgentMessageRole::User,
+    ///         content: "Hello, world!".to_string(),
+    ///         tool_calls: None,
+    ///     }];
+    ///     let response = client.agent_async(agent_id, messages, None).await.unwrap();
+    ///     println!("{:?}: {}", response.choices[0].message.role, response.choices[0].message.content);
+    /// }
+    /// ```
+    pub async fn agent_async(
+        &self,
+        id: impl AsRef<str>,
+        messages: Vec<agent::AgentMessage>,
+        options: Option<agent::AgentParams>,
+    ) -> Result<agent::AgentResponse, error::ApiError> {
+        let request = agent::AgentRequest::new(id.as_ref(), messages, false, options);
+
+        let response = self.post_async("/agents/completions", &request).await?;
+        let result = response.json::<agent::AgentResponse>().await;
         match result {
             Ok(data) => {
                 utils::debug_pretty_json_from_struct("Response Data", &data);
@@ -417,8 +524,8 @@ impl Client {
         request_builder
     }
 
-    fn call_function_if_any(&self, response: chat::ChatResponse) -> () {
-        let next_result = match response.choices.get(0) {
+    fn call_function_if_any(&self, response: impl chat::HasChoices) -> () {
+        let next_result = match response.choices().get(0) {
             Some(first_choice) => match first_choice.message.tool_calls.to_owned() {
                 Some(tool_calls) => match tool_calls.get(0) {
                     Some(first_tool_call) => {
@@ -448,8 +555,8 @@ impl Client {
         *last_result_lock = next_result;
     }
 
-    async fn call_function_if_any_async(&self, response: chat::ChatResponse) -> () {
-        let next_result = match response.choices.get(0) {
+    async fn call_function_if_any_async(&self, response: impl chat::HasChoices) -> () {
+        let next_result = match response.choices().get(0) {
             Some(first_choice) => match first_choice.message.tool_calls.to_owned() {
                 Some(tool_calls) => match tool_calls.get(0) {
                     Some(first_tool_call) => {
